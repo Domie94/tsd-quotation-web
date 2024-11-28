@@ -55,6 +55,7 @@ const Layout = (props) => {
             ...item,
             current: item.id === id, // Set `current` to true for the selected item
         }));
+        localStorage.setItem('path', "");
         setNavigationState(updatedNavigation);
         localStorage.setItem('current', Number(id));
         navigate(href);
@@ -106,15 +107,15 @@ const Layout = (props) => {
                                                         <button
                                                             className={classNames(
                                                                 item.current
-                                                                    ? 'bg-gray-50 text-indigo-600'
-                                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
+                                                                    ? 'bg-gray-50 text-gray-600'
+                                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-gray-600',
                                                                 'group flex gap-x-3 rounded-md p-2 text-lg font-semibold',
                                                             )}
                                                         >
                                                             <item.icon
                                                                 aria-hidden="true"
                                                                 className={classNames(
-                                                                    item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                                                                    item.current ? 'text-gray-600' : 'text-gray-400 group-hover:text-gray-600',
                                                                     'size-6 shrink-0',
                                                                 )}
                                                             />
@@ -154,15 +155,15 @@ const Layout = (props) => {
                                                 <button
                                                     className={classNames(
                                                         item.current
-                                                            ? 'bg-gray-50 text-indigo-600'
-                                                            : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
+                                                            ? 'bg-gray-50 text-gray-600'
+                                                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-600',
                                                         'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
                                                     )}
                                                 >
                                                     <item.icon
                                                         aria-hidden="true"
                                                         className={classNames(
-                                                            item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                                                            item.current ? 'text-gray-600' : 'text-gray-400 group-hover:text-gray-600',
                                                             'size-6 shrink-0',
                                                         )}
                                                     />
@@ -195,6 +196,13 @@ const Layout = (props) => {
                             aria-hidden="true"
                             className="h-6 w-px bg-gray-200 lg:hidden"
                         />
+                        <div className="flex-1 text-center lg:text-left font-bold text-xl">
+                            {navigationState.map((item, index) => (
+                                <span key={index} className="text-xl">
+                                    {item.current ? t(item.name) : null}
+                                </span>
+                            ))} {!localStorage.getItem('path') ? "" : "/ " + t(localStorage.getItem('path'))}
+                        </div>
                         {/* Profile dropdown */}
                         <Menu as="div" className="relative ml-auto">
                             <MenuButton className="-m-1.5 flex items-center p-1.5">
@@ -226,7 +234,7 @@ const Layout = (props) => {
                         </Menu>
                     </div>
 
-                    <main className="py-5">
+                    <main className="py-2">
                         <div className="px-4 sm:px-6 lg:px-8 bg">
                             {props.children}
                         </div>

@@ -1,6 +1,6 @@
 import { all, fork } from "redux-saga/effects";
  
-// User
+// customers
 import userSaga from "./customers/saga";  
 
 export default function* rootSaga() {

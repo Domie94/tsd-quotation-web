@@ -1,85 +1,194 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { getCustomer } from "../../store/customers/action"
-import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { createCustomer } from "../../store/customers/action"
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { useFormik } from 'formik';
+import * as Yup from "yup";
+
+function classNames(...classes) {
+    return classes.filter(Boolean).join(" ");
+}
 
 export default function Add() {
 
+    const dispatch = useDispatch();
     const { t } = useTranslation();
 
+    const { loading, success, error, } = useSelector(state => ({
+        loading: state.customers.loading,
+        success: state.customers.success,
+        error: state.customers.error,
+    }), shallowEqual);
+
+    const validation = useFormik({
+
+        enableReinitialize: true,
+
+        initialValues: {
+            name: "" || '',
+            address: "" || '',
+            phone: "" || '',
+            email: "" || '',
+        },
+
+        validationSchema: Yup.object({
+            name: Yup.string().required(t('Please, Enter the Name')),
+            address: Yup.string().required(t('Please, Enter the Addess')),
+            // phone: Yup.string().required(t('Please, Enter the Phone')),
+            // email: Yup.string().required(t('Please, Enter the Email')),
+        }),
+        onSubmit: (values) => {
+            dispatch(createCustomer({
+                name: values.name,
+                address: values.address,
+                phone: values.phone,
+                email: values.email
+            }))
+        }
+    }); 
+    
     return (
         <>
             <div className="bg-white">
-                {/* {loading && <p className="text-sm text-gray-600">{t('Loading')}...</p>} */}
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900 mb-2">{t('Add Customer')}</h2>
-
                 <div className="grid grid-cols-1 items-start gap-x-6 gap-y-2 lg:grid-cols-12 lg:gap-8">
                     <div className="grid grid-cols-1 gap-4 lg:col-span-12 xl:col-span-4">
-                        <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-12">
-                            <div className="sm:col-span-12">
-                                <div className="mt-2 relative">
-                                    <label
-                                        htmlFor="name"
-                                        className="absolute -top-2 left-2 inline-block bg-white px-1 text-sm font-medium text-gray-900"
-                                    >
-                                        Name
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            validation.handleSubmit();
+                            return false;
+                        }}>
+                            {loading && <p className="text-sm text-gray-600">{t('Loading')}...</p>}
+                            {success || error ?
+                                <div className={classNames("border-l-4 ", success ? "border-green-400 bg-green-50" : "border-red-400 bg-red-50", "p-4 mb-4")}>
+                                    <div className="flex">
+                                        <div className="flex-shrink-0">
+                                            {success ? <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" /> : <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />}
+                                        </div>
+                                        <div className="ml-3">
+                                            <p className={classNames("text-md", success ? "text-green-700" : "text-red-700 leading-relaxed")}>
+                                                {error ? <>{t('Failed')} <br /> {error.message}</> : t('Successfully')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div> : null}
+                            <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-12">
+                                <div className="sm:col-span-12">
+                                    <label htmlFor="name" className={classNames("block text-lg font-medium", validation.touched.name && validation.errors.name ? "text-red-400" : "text-gray-900")}>
+                                        {t('Name')}:
                                     </label>
-                                    <input
-                                        id="first-name"
-                                        name="first-name"
-                                        type="text"
-                                        autoComplete="given-name"
-                                        placeholder={t('Name') + "..."}
-                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-lg md:text-md"
-                                    />
+                                    <div>
+                                        <input
+                                            disabled={success ? true : false}
+                                            id="name"
+                                            name="name"
+                                            type="text"
+                                            autoComplete="name"
+                                            placeholder={t('Name') + "..."}
+                                            className={classNames("block w-full rounded-md border-0 py-1.5 pl-2",
+                                                validation.touched.name && validation.errors.name ? "text-red-400" : "text-gray-900", "shadow-sm ring-1 ring-inset",
+                                                validation.touched.name && validation.errors.name ? "ring-red-400" : "ring-gray-300",
+                                                validation.touched.name && validation.errors.name ? "placeholder:text-red-400" : "placeholder:text-gray-400", "focus:ring-2 focus:ring-inset",
+                                                validation.touched.name && validation.errors.name ? "focus:ring-red-400" : "focus:ring-indigo-600", "text-lg md:text-md"
+                                            )}
+                                            onChange={validation.handleChange}
+                                            onBlur={validation.handleBlur}
+                                            value={validation.values.name}
+                                            aria-invalid={validation.touched.name && validation.errors.name ? true : false}
+                                            aria-describedby="name-error"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="sm:col-span-12">
-                                <div className="mt-2">
-                                    <input
-                                        id="last-name"
-                                        name="last-name"
-                                        type="text"
-                                        autoComplete="family-name"
-                                        placeholder={t('Address') + "..."}
-                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-lg md:text-md"
-                                    />
+                                <div className="sm:col-span-12">
+                                    <label htmlFor="address" className={classNames("block text-lg font-medium", validation.touched.address && validation.errors.address ? "text-red-400" : "text-gray-900")}>
+                                        {t('Address')}:
+                                    </label>
+                                    <div>
+                                        <input
+                                            disabled={success ? true : false}
+                                            id="address"
+                                            name="address"
+                                            type="text"
+                                            autoComplete="address"
+                                            placeholder={t('Address') + "..."}
+                                            className={classNames("block w-full rounded-md border-0 py-1.5 pl-2",
+                                                validation.touched.address && validation.errors.address ? "text-red-400" : "text-gray-900", "shadow-sm ring-1 ring-inset",
+                                                validation.touched.address && validation.errors.address ? "ring-red-400" : "ring-gray-300",
+                                                validation.touched.address && validation.errors.address ? "placeholder:text-red-400" : "placeholder:text-gray-400", "focus:ring-2 focus:ring-inset",
+                                                validation.touched.address && validation.errors.address ? "focus:ring-red-400" : "focus:ring-indigo-600", "text-lg md:text-md"
+                                            )}
+                                            onChange={validation.handleChange}
+                                            onBlur={validation.handleBlur}
+                                            value={validation.values.address}
+                                            aria-invalid={validation.touched.address && validation.errors.address ? true : false}
+                                            aria-describedby="name-error"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-12">
+                                    <label htmlFor="phone" className={classNames("block text-lg font-medium", validation.touched.phone && validation.errors.phone ? "text-red-400" : "text-gray-900")}>
+                                        {t('Phone')}:
+                                    </label>
+                                    <div>
+                                        <input
+                                            disabled={success ? true : false}
+                                            id="phone"
+                                            name="phone"
+                                            type="text"
+                                            autoComplete="phone"
+                                            placeholder={t('Phone') + "..."}
+                                            className={classNames("block w-full rounded-md border-0 py-1.5 pl-2",
+                                                validation.touched.phone && validation.errors.phone ? "text-red-400" : "text-gray-900", "shadow-sm ring-1 ring-inset",
+                                                validation.touched.phone && validation.errors.phone ? "ring-red-400" : "ring-gray-300",
+                                                validation.touched.phone && validation.errors.phone ? "placeholder:text-red-400" : "placeholder:text-gray-400", "focus:ring-2 focus:ring-inset",
+                                                validation.touched.phone && validation.errors.phone ? "focus:ring-red-400" : "focus:ring-indigo-600", "text-lg md:text-md"
+                                            )}
+                                            onChange={validation.handleChange}
+                                            onBlur={validation.handleBlur}
+                                            value={validation.values.phone}
+                                            aria-invalid={validation.touched.phone && validation.errors.phone ? true : false}
+                                            aria-describedby="name-error"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-12">
+                                    <label htmlFor="email" className={classNames("block text-lg font-medium", validation.touched.email && validation.errors.email ? "text-red-400" : "text-gray-900")}>
+                                        {t('Email')}:
+                                    </label>
+                                    <div>
+                                        <input
+                                            disabled={success ? true : false}
+                                            id="email"
+                                            name="email"
+                                            type="text"
+                                            autoComplete="email"
+                                            placeholder={t('Email') + "..."}
+                                            className={classNames("block w-full rounded-md border-0 py-1.5 pl-2",
+                                                validation.touched.email && validation.errors.email ? "text-red-400" : "text-gray-900", "shadow-sm ring-1 ring-inset",
+                                                validation.touched.email && validation.errors.email ? "ring-red-400" : "ring-gray-300",
+                                                validation.touched.email && validation.errors.email ? "placeholder:text-red-400" : "placeholder:text-gray-400", "focus:ring-2 focus:ring-inset",
+                                                validation.touched.email && validation.errors.email ? "focus:ring-red-400" : "focus:ring-indigo-600", "text-lg md:text-md"
+                                            )}
+                                            onChange={validation.handleChange}
+                                            onBlur={validation.handleBlur}
+                                            value={validation.values.email}
+                                            aria-invalid={validation.touched.email && validation.errors.email ? true : false}
+                                            aria-describedby="name-error"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                            <div className="sm:col-span-12">
-                                <div className="mt-2">
-                                    <input
-                                        id="last-name"
-                                        name="last-name"
-                                        type="text"
-                                        autoComplete="family-name"
-                                        placeholder={t('Phone') + "..."}
-                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-lg md:text-md"
-                                    />
-                                </div>
-                            </div>
-                            <div className="sm:col-span-12">
-                                <div className="mt-2">
-                                    <input
-                                        id="last-name"
-                                        name="last-name"
-                                        type="text"
-                                        autoComplete="family-name"
-                                        placeholder={t('Email') + "..."}
-                                        className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-lg md:text-md"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            className="inline-flex items-center w-14 gap-x-1.5 rounded-md bg-indigo-600 px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
-                            {/* <CheckCircleIcon aria-hidden="true" className="-ml-0.5 size-5" /> */}
-                            {t('Save')}
-                        </button>
+                            {!success ?
+                                <div className="flex justify-end">
+                                    <button
+                                        type="submit"
+                                        className="inline-flex mt-4 justify-center w-[60px] items-center gap-x-1.5 rounded-md border border-gray-600 text-gray-600 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+                                    >
+                                        {t('Save')}
+                                    </button>
+                                </div> : null}
+                        </form>
 
                     </div>
                     <div className="mt-2 grid grid-cols-1 gap-4 lg:col-span-12 xl:col-span-8">

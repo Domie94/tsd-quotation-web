@@ -2,9 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { getCustomer } from "../../store/customers/action"
-import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, PencilSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import { on } from "i18next";
+
+const stats = [
+    { name: 'Revenue', value: '$405,091.00', change: '+4.75%', changeType: 'positive' },
+    { name: 'Overdue invoices', value: '$12,787.00', change: '+54.02%', changeType: 'negative' },
+    { name: 'Outstanding invoices', value: '$245,988.00', change: '-1.39%', changeType: 'positive' },
+    { name: 'Expenses', value: '$30,156.00', change: '+10.18%', changeType: 'negative' },
+]
+
+function classNames(...classes) {
+    return classes.filter(Boolean).join(' ')
+}
 
 export default function Main() {
 
@@ -28,21 +38,27 @@ export default function Main() {
     });
 
     const handleAddCustomer = () => {
+        localStorage.setItem("path", "Add Customer");
         naviagte("/customers/add");
-    }   
+    }
+
+    const handleEditCustomer = (id) => {
+        localStorage.setItem("path", "Edit Customer");
+        naviagte(`/customers/edit/${id}`);
+    }
 
     return (
         <>
-            <div className="bg-white"> 
+            <div className="bg-white">
                 {loading && <p className="text-sm text-gray-600">{t('Loading')}...</p>}
                 {error ?
                     <p className="text-sm text-red-600">{t('Error')}: {JSON.stringify(error)}</p> :
                     <div className="grid grid-cols-1 items-start gap-x-6 gap-y-2 lg:grid-cols-12 lg:gap-8">
                         <div className="mt-2 grid grid-cols-1 gap-4 lg:col-span-12 xl:col-span-6">
 
-                            <div className="flex">
+                            {/* <div className="hidden lg:flex">
                                 <div className="w-1/2">
-                                    <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-2">{t('Customers')}</h2>
+                                    <h2 className="text-2xl font-bold tracking-tight text-gray-900">{t('Customers')}</h2>
                                 </div>
                                 <div className="w-1/2 flex flex-row-reverse">
                                     <button
@@ -50,10 +66,10 @@ export default function Main() {
                                         onClick={() => handleAddCustomer()}
                                         className="inline-flex items-center gap-x-2 rounded-md px-1.5 py-0.5 text-sm text-gray-600 border border-gray-200 shadow-lg hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                                     >
-                                        <PlusIcon aria-hidden="true" className="size-10" />
+                                        <PlusIcon aria-hidden="true" className="size-6" />
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* begin search */}
                             <div>
@@ -91,12 +107,26 @@ export default function Main() {
                                     <p className="mt-1 text-sm text-gray-600">{t('Address')}:&nbsp;{item.address}</p>
                                     <p className="mt-0 text-sm text-gray-600">{t('Phone')}:&nbsp;{item.phone}</p>
                                     <p className="mt-0 text-sm text-gray-600">{t('Email')}:&nbsp;{item.email}</p>
+                                    <div
+                                        className="flex flex-wrap items-baseline justify-between -mt-8 -pt-2"
+                                    >
+                                        <dt></dt>
+                                        <dd>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleEditCustomer(item.id)}
+                                                className="inline-flex items-center text-sm text-gray-600  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                                            >
+                                                <PencilSquareIcon aria-hidden="true" className="size-7" />
+                                            </button>
+                                        </dd>
+                                    </div>
                                 </div>
                             ))}
                             {/* end data list */}
 
                             {/* begin pagination */}
-                            <div className="flex items-center justify-between bg-white py-1" style={querySearchName ? { display: 'none' } : null}>
+                            {/* <div className="flex items-center justify-between bg-white py-1 mb-10" style={querySearchName ? { display: 'none' } : null}>
                                 <div className="flex flex-1 justify-between sm:hidden">
                                     <a
                                         href="#"
@@ -133,7 +163,6 @@ export default function Main() {
                                                 <span className="sr-only">Previous</span>
                                                 <ChevronLeftIcon aria-hidden="true" className="size-5" />
                                             </a>
-                                            {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
                                             <a
                                                 href="#"
                                                 aria-current="page"
@@ -184,7 +213,7 @@ export default function Main() {
                                         </nav>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             {/* end pagination */}
 
                         </div>
@@ -194,6 +223,15 @@ export default function Main() {
                     </div>
                 }
             </div>
+            <div className="fixed bottom-4 right-4">
+            <button
+                type="button"
+                onClick={() => handleAddCustomer()}
+                className="inline-flex items-center gap-x-2 rounded-full px-4 py-2 text-sm text-white bg-gray-600 shadow-lg hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+            >
+                <PlusIcon aria-hidden="true" className="size-8" />
+            </button>
+        </div>
         </>
     );
 }

@@ -21,5 +21,15 @@
     "Previous": "Previous",
     "Next": "Next",
     "Add Customer": "Add Customer",
-    "Save": "Save"
+    "Edit Customer": "Edit Customer",
+    "Save": "Save",
+    "Please, Enter the Name": "Please, Enter the Name",
+    "Please, Enter the Addess": "Please, Enter the Addess",
+    "Please, Enter the Phone": "Please, Enter the Phone",
+    "Please, Enter the Email": "Please, Enter the Email",
+    "Reset": "Reset",
+    "Successfully": "Successfully",
+    "Failed": "Failed",
+    "Delete": "Delete",
+    "Edit": "Edit"
 }

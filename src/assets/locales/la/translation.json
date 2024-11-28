@@ -20,6 +20,16 @@
     "results": "ລາຍການ",
     "Previous": "ກ່ອນຫນ້າ",
     "Next": "ຕໍ່ໄປ",
-    "Add Customer": "ເພີ່ມລູກຄ້າ",
-    "Save": "ບັນທຶກ"
+    "Add Customer": "ເພີ່ມຂໍ້ມູນ ລູກຄ້າ",
+    "Edit Customer": "ແກ້ໄຂຂໍ້ມູນ ລູກຄ້າ",
+    "Save": "ບັນທຶກ",
+    "Please, Enter the Name": "ກະລຸນາ, ປ້ອນຊື່",
+    "Please, Enter the Addess": "ກະລຸນາ, ປ້ອນທີ່ຢູ່",
+    "Please, Enter the Phone": "ກະລຸນາ, ປ້ອນເບີໂທ",
+    "Please, Enter the Email": "ກະລຸນາ, ປ້ອນອີເມວ",
+    "Reset": "ເລີ່ມໃໝ່",
+    "Successfully": "ສຳເລັດ",
+    "Failed": "ບໍ່ສຳເລັດ",
+    "Delete": "ລົບ",
+    "Edit": "ແກ້ໄຂ"
 }

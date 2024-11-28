@@ -37,13 +37,14 @@ export default function Dashboard() {
 
     const handleNavigate = (id) => {
         localStorage.setItem('current', Number(id));
+        localStorage.setItem('path', "");
     }
 
     return (
         <>
             <ul className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 lg:grid-cols-8 xl:grid-cols-10">
                 {people.map((person, index) => (
-                    <div key={index} className="text-center *:hover:text-indigo-600">
+                    <div key={index} className="text-center *:hover:text-gray-600">
                         <a
                             href={person.href}
                             onClick={() => handleNavigate(person.id)}
