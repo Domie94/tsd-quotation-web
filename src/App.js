@@ -1,24 +1,49 @@
-import logo from './logo.svg';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 import './App.css';
+
+import { publicRoutes } from "./routes/public.routes";
+import { authProtectedRoutes } from "./routes/auth.routes";
+
+// Import all middleware
+import Authmiddleware from "./routes/route.routes";
+
+import AuthLayout from "./layouts/AuthLayouts/index";
+import NonAuthLayout from "./layouts/NoneAuthLayouts/index";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <React.Fragment>
+        <Routes>
+          {publicRoutes.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <NonAuthLayout>
+                  {route.component}
+                </NonAuthLayout>
+              }
+              key={idx}
+              exact={true}
+            />
+          ))}
+
+          {authProtectedRoutes.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <Authmiddleware>
+                  <AuthLayout>{route.component}</AuthLayout>
+                </Authmiddleware>}
+              key={idx}
+              exact={true}
+            />
+          ))}
+
+        </Routes>
+      </React.Fragment>
+    </>
   );
 }
 
