@@ -26,7 +26,7 @@ export default function Edit() {
 
     useEffect(() => {
         dispatch(getCustomerId(id));
-    }, [dispatch]);
+    }, [dispatch, id]);
 
     const validation = useFormik({
 

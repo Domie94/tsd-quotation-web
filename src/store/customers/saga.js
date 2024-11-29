@@ -50,9 +50,14 @@ function* fetchCustomerId({ payload: id }) {
 function* createCustomer({ payload: { data } }) {
     try {
         const response = yield call(createCustomerApi, data);
-        localStorage.setItem('path', "");
         yield put(createCustomerSuccess(response));
-        window.location.href = "/customers";
+        if (Number(localStorage.getItem('current')) === 2) {
+            localStorage.setItem('path', "");
+            window.location.href = "/customers";
+        } else {
+            localStorage.setItem("path", "Select Customer");
+            window.location.href = "/quotations/select/customer";
+        }
     } catch (error) {
         localStorage.setItem('path', "");
         yield put(createCustomerFail(error));
@@ -61,10 +66,15 @@ function* createCustomer({ payload: { data } }) {
 
 function* updateCustomer({ payload: { id, data } }) {
     try {
-        const response = yield call(updateCustomerApi, id, data);
-        localStorage.setItem('path', "");
+        const response = yield call(updateCustomerApi, id, data); 
         yield put(updateCustomerSuccess(response));
-        window.location.href = "/customers";
+        if (Number(localStorage.getItem('current')) === 2) {
+            localStorage.setItem('path', "");
+            window.location.href = "/customers";
+        } else {
+            localStorage.setItem("path", "Select Customer");
+            window.location.href = "/quotations/select/customer";
+        }
     } catch (error) {
         localStorage.setItem('path', "");
         yield put(updateCustomerFail(error));
@@ -74,9 +84,14 @@ function* updateCustomer({ payload: { id, data } }) {
 function* deleteCustomer({ payload: id }) {
     try {
         const response = yield call(deleteCustomerApi, id);
-        localStorage.setItem('path', "");
         yield put(deleteCustomerSuccess(response));
-        window.location.href = "/customers";
+        if (Number(localStorage.getItem('current')) === 2) {
+            localStorage.setItem('path', "");
+            window.location.href = "/customers";
+        } else {
+            localStorage.setItem("path", "Select Customer");
+            window.location.href = "/quotations/select/customer";
+        }
     } catch (error) {
         localStorage.setItem('path', "");
         yield put(deleteCustomerFail(error));

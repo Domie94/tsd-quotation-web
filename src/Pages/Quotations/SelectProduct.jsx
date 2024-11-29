@@ -6,7 +6,7 @@ import { MagnifyingGlassIcon, PencilSquareIcon, PlusIcon } from "@heroicons/reac
 import { useNavigate } from "react-router-dom";
 import { numberDot } from "../../functions";
 
-export default function Main() {
+export default function SelectProsuct() {
 
     const dispatch = useDispatch();
     const naviagte = useNavigate();
@@ -35,6 +35,12 @@ export default function Main() {
     const handleEditProduct = (id) => {
         localStorage.setItem("path", "Edit Product");
         naviagte(`/products/edit/${id}`);
+    }
+
+    const onClickSelectProduct = (id) => {
+        // dispatch(getQuotationCustomerId(id));
+        localStorage.setItem('path', "Select Product / Add");
+        naviagte("/quotations/select/product/add");
     }
 
     return (
@@ -74,13 +80,16 @@ export default function Main() {
                             {filteredSearchName.map((item, index) => (
                                 <div
                                     key={index}
-                                    className="relative bg-white shadow-lg rounded-md p-2 ring-1 ring-gray-900/20 sm:p-2"
+                                    className="relative bg-white shadow-lg rounded-md p-2 ring-1 ring-gray-900/20 sm:p-2 cursor-pointer"
                                 >
-                                    <p className="flex items-baseline gap-x-2">
-                                        <span className="text-lg font-semibold tracking-tight text-gray-900">{t('Name')}:&nbsp;{item.name}</span>
-                                    </p>
-                                    <p className="mt-1 text-sm text-gray-600">{t('Description')}:&nbsp;{item.description}</p>
-                                    <p className="mt-0 text-sm text-gray-600">{t('Price')}:&nbsp;{numberDot(Number(item.unit_price))}</p>
+                                    <div onClick={() => onClickSelectProduct(item.id)}>
+                                        <p className="flex items-baseline gap-x-2">
+                                            <span className="text-lg font-semibold tracking-tight text-gray-900">{t('Name')}:&nbsp;{item.name}</span>
+                                        </p>
+                                        <p className="mt-1 text-sm text-gray-600">{t('Description')}:&nbsp;{item.description}</p>
+                                        <p className="mt-0 text-sm text-gray-600">{t('Price')}:&nbsp;{numberDot(Number(item.unit_price))}</p>
+                                    </div>
+
                                     <div
                                         className="flex flex-wrap items-baseline justify-between -mt-8 -pt-2"
                                     >

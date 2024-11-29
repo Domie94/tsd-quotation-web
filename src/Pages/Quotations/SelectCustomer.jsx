@@ -1,40 +1,46 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { getProduct } from "../../store/products/action"
+import { getCustomer } from "../../store/customers/action";
+import { getQuotationCustomerId } from "../../store/quotations/action";
 import { MagnifyingGlassIcon, PencilSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import { numberDot } from "../../functions";
 
-export default function Main() {
+export default function SelectCustomer() {
 
     const dispatch = useDispatch();
     const naviagte = useNavigate();
     const { t } = useTranslation();
     const [querySearchName, setQuerySearchName] = useState("");
 
-    const { productData, error, loading } = useSelector(state => ({
-        productData: state.products.productData,
-        error: state.products.error,
-        loading: state.products.loading,
+    const { customerData, error, loading } = useSelector(state => ({
+        customerData: state.customers.customerData,
+        error: state.customers.error,
+        loading: state.customers.loading,
     }), shallowEqual);
 
     useEffect(() => {
-        dispatch(getProduct());
+        dispatch(getCustomer());
     }, [dispatch]);
 
-    const filteredSearchName = querySearchName === "" ? productData : productData.filter((item) => {
+    const filteredSearchName = querySearchName === "" ? customerData : customerData.filter((item) => {
         return item.name.toLowerCase().includes(querySearchName.toLowerCase());
     });
 
-    const handleAddProduct = () => {
-        localStorage.setItem("path", "Add Product");
-        naviagte("/products/add");
+    const handleAddCustomer = () => {
+        localStorage.setItem("path", "Add Customer");
+        naviagte("/customers/add");
     }
 
-    const handleEditProduct = (id) => {
-        localStorage.setItem("path", "Edit Product");
-        naviagte(`/products/edit/${id}`);
+    const handleEditCustomer = (id) => {
+        localStorage.setItem("path", "Edit Customer");
+        naviagte(`/customers/edit/${id}`);
+    }
+
+    const onClickSelectCustomer = (id) => {
+        dispatch(getQuotationCustomerId(id));
+        localStorage.setItem('path', "");
+        naviagte("/quotations");
     }
 
     return (
@@ -74,13 +80,18 @@ export default function Main() {
                             {filteredSearchName.map((item, index) => (
                                 <div
                                     key={index}
-                                    className="relative bg-white shadow-lg rounded-md p-2 ring-1 ring-gray-900/20 sm:p-2"
+                                    className="relative bg-white shadow-lg rounded-md p-2 ring-1 ring-gray-900/20 sm:p-2 cursor-pointer"
+
                                 >
-                                    <p className="flex items-baseline gap-x-2">
-                                        <span className="text-lg font-semibold tracking-tight text-gray-900">{t('Name')}:&nbsp;{item.name}</span>
-                                    </p>
-                                    <p className="mt-1 text-sm text-gray-600">{t('Description')}:&nbsp;{item.description}</p>
-                                    <p className="mt-0 text-sm text-gray-600">{t('Price')}:&nbsp;{numberDot(Number(item.unit_price))}</p>
+                                    <div onClick={() => onClickSelectCustomer(item.id)}>
+                                        <p className="flex items-baseline gap-x-2">
+                                            <span className="text-lg font-semibold tracking-tight text-gray-900">{t('Name')}:&nbsp;{item.name}</span>
+                                        </p>
+                                        <p className="mt-1 text-sm text-gray-600">{t('Address')}:&nbsp;{item.address}</p>
+                                        <p className="mt-0 text-sm text-gray-600">{t('Phone')}:&nbsp;{item.phone}</p>
+                                        <p className="mt-0 text-sm text-gray-600">{t('Email')}:&nbsp;{item.email}</p>
+                                    </div>
+
                                     <div
                                         className="flex flex-wrap items-baseline justify-between -mt-8 -pt-2"
                                     >
@@ -88,7 +99,7 @@ export default function Main() {
                                         <dd>
                                             <button
                                                 type="button"
-                                                onClick={() => handleEditProduct(item.id)}
+                                                onClick={() => handleEditCustomer(item.id)}
                                                 className="inline-flex items-center text-sm text-gray-600  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                                             >
                                                 <PencilSquareIcon aria-hidden="true" className="size-7" />
@@ -113,7 +124,7 @@ export default function Main() {
             <div className="fixed bottom-4 right-4">
                 <button
                     type="button"
-                    onClick={() => handleAddProduct()}
+                    onClick={() => handleAddCustomer()}
                     className="inline-flex items-center gap-x-2 rounded-full px-4 py-2 text-sm text-white bg-gray-600 shadow-lg hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
                 >
                     <PlusIcon aria-hidden="true" className="size-8" />

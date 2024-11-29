@@ -4,7 +4,7 @@ import pdfMake from "pdfmake/build/pdfmake";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 
-export default function Quotition() {
+export default function Quotation() {
 
     const [url, setUrl] = useState("");
 
