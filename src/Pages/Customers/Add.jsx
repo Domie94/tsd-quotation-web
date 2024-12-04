@@ -43,7 +43,8 @@ export default function Add() {
                 name: values.name,
                 address: values.address,
                 phone: values.phone,
-                email: values.email
+                email: values.email,
+                company_id: Number(localStorage.getItem('company_id'))
             }))
         }
     }); 
@@ -67,7 +68,7 @@ export default function Add() {
                                         </div>
                                         <div className="ml-3">
                                             <p className={classNames("text-md", success ? "text-green-700" : "text-red-700 leading-relaxed")}>
-                                                {error ? <>{t('Failed')} <br /> {error.message}</> : t('Successfully')}
+                                                {error ? <>{t('Failed')} <br /> {error.response.data.error}</> : t('Successfully')}
                                             </p>
                                         </div>
                                     </div>
@@ -98,8 +99,7 @@ export default function Add() {
                                             aria-describedby="name-error"
                                         />
                                     </div>
-                                </div>
-
+                                </div> 
                                 <div className="sm:col-span-12">
                                     <label htmlFor="address" className={classNames("block text-lg font-medium", validation.touched.address && validation.errors.address ? "text-red-400" : "text-gray-900")}>
                                         {t('Address')}:

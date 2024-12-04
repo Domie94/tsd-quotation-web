@@ -67,6 +67,11 @@ const Layout = (props) => {
         localStorage.setItem('i18nextLng', lng);
     };
 
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/login');
+    }
+
     return (
         <React.Fragment>
             <div>
@@ -196,9 +201,9 @@ const Layout = (props) => {
                             aria-hidden="true"
                             className="h-6 w-px bg-gray-200 lg:hidden"
                         />
-                        <div className="flex-1 text-center lg:text-left font-bold text-xl">
+                        <div className="flex-1 text-center lg:text-left font-bold text-lg md:text-xl">
                             {navigationState.map((item, index) => (
-                                <span key={index} className="text-xl">
+                                <span key={index} className="text-lg md:text-xl">
                                     {item.current ? t(item.name) : null}
                                 </span>
                             ))} {!localStorage.getItem('path') ? "" : "/ " + t(localStorage.getItem('path'))}
@@ -232,6 +237,10 @@ const Layout = (props) => {
                                 ))}
                             </MenuItems>
                         </Menu>
+
+                        <button onClick={() => handleLogout()} className='text-sm/6 font-semibold text-gray-900 border border-gray-200 rounded-md px-1 lg:px-1 lg:py-0'>
+                            {t('Logout')}
+                        </button>
                     </div>
 
                     <main className="py-2">

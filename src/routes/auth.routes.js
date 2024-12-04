@@ -31,11 +31,11 @@ const authProtectedRoutes = [
   { path: "/quotations", component: <MainQuotations /> },
   { path: "/quotations/select/customer", component: <SelectCustomerQuotations /> },
   { path: "/quotations/select/product", component: <SelectProductQuotations /> },
-  { path: "/quotations/select/product/add", component: <SelectProductAddQuotations /> },
+  { path: "/quotations/select/product/add/:id", component: <SelectProductAddQuotations /> },
   { path: "/quotation/lists", component: <MainQuotationLists /> },
 
   
-  { path: "/quotation/report", component: <ReportQuotation /> },
+  { path: "/quotation/report/:id", component: <ReportQuotation /> },
 
   { path: "/", exact: true, component: <Navigate to="/dashboard" />, },
 ];

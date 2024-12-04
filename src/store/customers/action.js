@@ -110,9 +110,10 @@ export const createCustomerFail = error => {
     }
 }
 
-export const getCustomer = () => {
+export const getCustomer = (page) => {
     return {
-        type: GET_CUSTOMER
+        type: GET_CUSTOMER,
+        payload: page
     }
 }
 export const getCustomerSuccess = data => {

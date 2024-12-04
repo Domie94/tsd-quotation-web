@@ -20,10 +20,10 @@ export default function Main() {
     }), shallowEqual);
 
     useEffect(() => {
-        dispatch(getProduct());
+        dispatch(getProduct(1));
     }, [dispatch]);
 
-    const filteredSearchName = querySearchName === "" ? productData : productData.filter((item) => {
+    const filteredSearchName = querySearchName === "" ? productData.data : productData.data.filter((item) => {
         return item.name.toLowerCase().includes(querySearchName.toLowerCase());
     });
 
@@ -42,7 +42,7 @@ export default function Main() {
             <div className="bg-white">
                 {loading && <p className="text-sm text-gray-600">{t('Loading')}...</p>}
                 {error ?
-                    <p className="text-sm text-red-600">{t('Error')}: {JSON.stringify(error)}</p> :
+                    <p className="text-sm text-red-600">{t('Error')}: {error.response.data.error}</p> :
                     <div className="grid grid-cols-1 items-start gap-x-6 gap-y-2 lg:grid-cols-12 lg:gap-8">
                         <div className="mt-2 grid grid-cols-1 gap-4 lg:col-span-12 xl:col-span-6">
 
@@ -71,7 +71,7 @@ export default function Main() {
                             {/* end search */}
 
                             {/* begin data list */}
-                            {filteredSearchName.map((item, index) => (
+                            {(filteredSearchName || []).map((item, index) => (
                                 <div
                                     key={index}
                                     className="relative bg-white shadow-lg rounded-md p-2 ring-1 ring-gray-900/20 sm:p-2"

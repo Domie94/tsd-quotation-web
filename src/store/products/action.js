@@ -110,9 +110,10 @@ export const createProductFail = error => {
     }
 }
 
-export const getProduct = () => {
+export const getProduct = (page) => {
     return {
-        type: GET_PRODUCT
+        type: GET_PRODUCT,
+        payload: page
     }
 }
 export const getProductSuccess = data => {

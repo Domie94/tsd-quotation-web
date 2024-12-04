@@ -50,7 +50,8 @@ export default function Edit() {
                 name: values.name,
                 address: values.address,
                 phone: values.phone,
-                email: values.email
+                email: values.email,
+                company_id: Number(localStorage.getItem('company_id'))
             }))
         }
     });
@@ -78,7 +79,7 @@ export default function Edit() {
                                         </div>
                                         <div className="ml-3">
                                             <p className={classNames("text-md", success ? "text-green-700" : "text-red-700 leading-relaxed")}>
-                                                {error ? <>{t('Failed')} <br /> {error.message}</> : t('Successfully')}
+                                                {error ? <>{t('Failed')} <br /> {error.response.data.error}</> : t('Successfully')}
                                             </p>
                                         </div>
                                     </div>

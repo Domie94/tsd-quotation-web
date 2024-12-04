@@ -29,9 +29,9 @@ import {
     deleteCustomerApi
 } from "../../helpers/helper";
 
-function* fetchCustomer() {
+function* fetchCustomer({ payload: page }) {
     try {
-        const response = yield call(getCustomerApi);
+        const response = yield call(getCustomerApi, page);
         yield put(getCustomerSuccess(response));
     } catch (error) {
         yield put(getCustomerFail(error));

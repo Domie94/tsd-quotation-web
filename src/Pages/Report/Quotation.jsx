@@ -1,12 +1,32 @@
 import React, { useEffect, useState } from "react";
 import pdfFonts from "../../assets/fonts/vfs_fonts";
 import pdfMake from "pdfmake/build/pdfmake";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+// import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getQuotationId } from "../../store/quotations/action";
+import { useTranslation } from "react-i18next";
+import moment from "moment/moment";
+import { getCompanyId } from "../../store/company/action";
+import { getCustomerId } from "../../store/customers/action"
+import { numberDot } from "../../functions";
 
 
 export default function Quotation() {
 
+    const { t } = useTranslation("translation");
+    const dispatch = useDispatch();
     const [url, setUrl] = useState("");
+    const { id } = useParams();
+    const CompanyId = localStorage.getItem('company_id');
+
+    const { quotationDataId, loading, error, companyDataId, customerDataId } = useSelector(state => ({
+        loadingQuotation: state.quotations.loadingQuotation,
+        quotationDataId: state.quotations.quotationDataId,
+        errorQuotation: state.quotations.errorQuotation,
+        companyDataId: state.companies.companyDataId,
+        customerDataId: state.customers.customerDataId,
+    }), shallowEqual);
 
     useEffect(() => {
         pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -31,11 +51,24 @@ export default function Quotation() {
     }, []);
 
     useEffect(() => {
+        if (id || CompanyId) {
+            dispatch(getQuotationId(id))
+            dispatch(getCompanyId(CompanyId));
+        };
+    }, [dispatch, id, CompanyId]);
+
+    useEffect(() => {
+        if (quotationDataId && quotationDataId?.quotation && quotationDataId?.quotation?.customer_id) {
+            dispatch(getCustomerId(quotationDataId?.quotation?.customer_id));
+        };
+    }, [dispatch, quotationDataId, quotationDataId?.quotation?.customer_id]);
+
+    useEffect(() => {
         try {
             const documentDefinition = {
-                images: {
-                    snow: 'http://192.168.100.130:3000/api/logo',
-                },
+                // images: {
+                //     snow: 'https://api.quotation.tsdrancher.com/api/logo',
+                // },
 
                 header: [
                     {
@@ -70,11 +103,11 @@ export default function Quotation() {
                     {
                         margin: [40, 0, 0, 0],
                         columns: [
-                            {
-                                image: 'snow',
-                                width: 40,
-                                margin: [15, 0, 0, 0],
-                            },
+                            // {
+                            //     image: 'snow',
+                            //     width: 40,
+                            //     margin: [15, 0, 0, 0],
+                            // },
                             {
                                 table: {
                                     widths: [360, 200],
@@ -90,7 +123,7 @@ export default function Quotation() {
 
 
                                             {
-                                                text: `ເລກທີ: 001/2022`,
+                                                text: `${t('No')}: ${quotationDataId?.quotation?.quote_number}`,
                                                 style: 'normalleft',
                                                 margin: [10, 0, 0, 0],
                                             },
@@ -106,7 +139,7 @@ export default function Quotation() {
 
 
                                             {
-                                                text: `ວັນທີ: 01/01/2022`,
+                                                text: `${t('Date')}: ${moment(quotationDataId?.quotation?.quote_date).format("DD/MM/YYYY")}`,
                                                 style: 'normalleft',
                                                 margin: [10, 0, 0, 0],
                                             },
@@ -127,16 +160,16 @@ export default function Quotation() {
                             widths: [505],
                             body: [
                                 [
-                                    { text: 'ບໍລິສັດ ທີເອັດສດີ ຈຳກັດຜູ້ດຽວ', style: 'companybold' }
+                                    { text: companyDataId?.name, style: 'companybold' }
                                 ],
                                 [
-                                    { text: 'ສຳນັກງານຕັ້ງຢູ່ ບ້ານ ຖິ່ນຕົມ, ເມືອງ ຫາດຊານຟອງ, ນະຄອນຫຼວງວຽງຈັນ ', style: 'company' }
+                                    { text: companyDataId?.address, style: 'company' }
                                 ],
                                 [
-                                    { text: 'ໂທລະສັບ 020 9259 8985', style: 'company' }
+                                    { text: `${t('Phone')}: ${companyDataId?.phone}`, style: 'company' }
                                 ],
                                 [
-                                    { text: 'ອີເມວ info@tsd.la', style: 'company' }
+                                    { text: `${t('Email')}: ${companyDataId?.email}`, style: 'company' }
                                 ],
                             ],
 
@@ -145,7 +178,7 @@ export default function Quotation() {
                         layout: 'noBorders',
                     },
                     {
-                        text: `ຄະນະຜູ້ບໍລິຫານ ບໍລິສັດ ທີເອັດສດີ ຈຳກັດຜູ້ດຽວ ຮູ້ສຶກເປັນກຽດໃນການແຈ້ງໃບສະເໜີລາຄາມາຍັງ:`,
+                        text: `${t('The executive’s board of TSD Sole Co., Ltd feels honored to announce the quotation to')}:`,
                         style: 'normalleft',
                         margin: [30, 5, 0, 0],
                     },
@@ -154,16 +187,16 @@ export default function Quotation() {
                             widths: [505],
                             body: [
                                 [
-                                    { text: 'ບໍລິສັດ ໄປສະນີລາວ ຈໍາກັດ ', style: 'companybold', margin: [0, 5, 0, 0], }
+                                    { text: customerDataId?.name, style: 'companybold', margin: [0, 5, 0, 0], }
                                 ],
                                 [
-                                    { text: 'ບ້ານ ຊຽງຍືນ, ເມືອງ: ຈັນທະບູລີ , ແຂວງ ນະຄອນຫຼວງວຽງຈັນ', style: 'company' }
+                                    { text: customerDataId?.address, style: 'company' }
                                 ],
                                 [
-                                    { text: 'ໂທລະສັບ 020 9259 8985', style: 'company' }
+                                    { text: `${t('Phone')}: ${customerDataId?.phone}`, style: 'company' }
                                 ],
                                 [
-                                    { text: 'ອີເມວ info@tsd.la', style: 'company' }
+                                    { text: `${t('Email')}: ${customerDataId?.email}`, style: 'company' }
                                 ],
                             ],
 
@@ -172,49 +205,46 @@ export default function Quotation() {
                         layout: 'noBorders',
                     },
                     {
-                        text: `ສຳລັບການບໍລິການມີລາຍລະອຽດດັັ່ງລຸ່ມນີ້:`,
+                        text: `${t('For the service, there is the details description as below')}:`,
                         style: 'normalleft',
                         margin: [30, 10, 0, 0],
                     },
                     {
                         margin: [0, 5, 0, 0],
                         table: {
-                            widths: [26, 252, 35, 78, 78],
+                            widths: [26, 247, 40, 78, 78],
                             headerRows: 1,
                             body: [
-                                [{ text: 'ລຳດັບ', style: 'tableHeader' }, { text: 'ເນື້ອໃນລາຍການ', style: 'tableHeader' }, { text: 'ຈຳນວນ', style: 'tableHeader' }, { text: 'ລາຄາຫົວໜ່ວຍ', style: 'tableHeader' }, { text: 'ລວມເປັນເງິນ', style: 'tableHeader' }],
                                 [
+                                    { text: t('No.'), style: 'tableHeader' },
+                                    { text: t('Content'), style: 'tableHeader' },
+                                    { text: t('Amount'), style: 'tableHeader' },
+                                    { text: t('Unit price'), style: 'tableHeader' },
+                                    { text: t('Sub Total'), style: 'tableHeader' },
+                                ],
+                                ...(quotationDataId?.items || []).map((item, index) => [
                                     {
-                                        // ລຳດັບ
-                                        text: '99',
+                                        text: index + 1,
                                         style: 'table',
                                         alignment: 'center'
                                     },
                                     {
-                                        // ເນື້ອໃນລາຍການ
                                         table: {
                                             widths: ['100%'],
                                             body: [
-
                                                 [
                                                     {
-                                                        // Product Name
-                                                        text: `ບໍລິການ ໂປຣແກຣມບັນຊີ ແລະ ບໍລິການເຊີເວີ (Server ງວດທີ 2 ປະຈຳປີ 2024)"`,
+                                                        text: item.name,
                                                         style: 'table',
                                                         bold: true,
                                                         argument: 'left',
-                                                      
                                                     },
-
                                                 ],
                                                 [
-
                                                     {
-                                                        // product detail
-                                                        text: `ບໍລິການ ໂປຣແກຣມບັນຊີ ແລະ ບໍລິການເຊີເວີ (Server ງວດທີ 2 ປະຈຳປີ 2024)`,
+                                                        text: item.description,
                                                         style: 'table',
                                                     },
-
                                                 ],
 
                                             ],
@@ -223,137 +253,23 @@ export default function Quotation() {
                                     },
                                     {
                                         // ຈຳນວນ
-                                        text: '1000',
+                                        text: item.quantity,
                                         style: 'table',
                                         alignment: 'center'
                                     },
                                     {
                                         // ລາຄາຫົວໜ່ວຍ
-                                        text: '1,000,000,000.00',
+                                        text: numberDot(Number(item.unit_price)),
                                         style: 'table',
                                         alignment: 'right'
                                     },
                                     {
                                         // ລວມເປັນເງິນ
-                                        text: '1,000,000,000.00',
+                                        text: numberDot(Number(item.quantity) * Number(item.unit_price)),
                                         style: 'table',
                                         alignment: 'right'
                                     },
-                                ],
-                                [
-                                    {
-                                        // ລຳດັບ
-                                        text: '99',
-                                        style: 'table',
-                                        alignment: 'center'
-                                    },
-                                    {
-                                        // ເນື້ອໃນລາຍການ
-                                        table: {
-                                            widths: ['100%'],
-                                            body: [
-
-                                                [
-                                                    {
-                                                        // Product Name
-                                                        text: `ບໍລິການ ໂປຣແກຣມບັນຊີ ແລະ ບໍລິການເຊີເວີ (Server ງວດທີ 2 ປະຈຳປີ 2024)"`,
-                                                        style: 'table',
-                                                        bold: true,
-                                                        argument: 'left',
-                                                      
-                                                    },
-
-                                                ],
-                                                [
-
-                                                    {
-                                                        // product detail
-                                                        text: `ບໍລິການ ໂປຣແກຣມບັນຊີ ແລະ ບໍລິການເຊີເວີ (Server ງວດທີ 2 ປະຈຳປີ 2024)`,
-                                                        style: 'table',
-                                                    },
-
-                                                ],
-
-                                            ],
-                                        },
-                                        layout: 'noBorders'
-                                    },
-                                    {
-                                        // ຈຳນວນ
-                                        text: '1000',
-                                        style: 'table',
-                                        alignment: 'center'
-                                    },
-                                    {
-                                        // ລາຄາຫົວໜ່ວຍ
-                                        text: '1,000,000,000.00',
-                                        style: 'table',
-                                        alignment: 'right'
-                                    },
-                                    {
-                                        // ລວມເປັນເງິນ
-                                        text: '1,000,000,000.00',
-                                        style: 'table',
-                                        alignment: 'right'
-                                    },
-                                ],
-                                [
-                                    {
-                                        // ລຳດັບ
-                                        text: '99',
-                                        style: 'table',
-                                        alignment: 'center'
-                                    },
-                                    {
-                                        // ເນື້ອໃນລາຍການ
-                                        table: {
-                                            widths: ['100%'],
-                                            body: [
-
-                                                [
-                                                    {
-                                                        // Product Name
-                                                        text: `ບໍລິການ ໂປຣແກຣມບັນຊີ ແລະ ບໍລິການເຊີເວີ (Server ງວດທີ 2 ປະຈຳປີ 2024)"`,
-                                                        style: 'table',
-                                                        bold: true,
-                                                        argument: 'left',
-                                                      
-                                                    },
-
-                                                ],
-                                                [
-
-                                                    {
-                                                        // product detail
-                                                        text: `ບໍລິການ ໂປຣແກຣມບັນຊີ ແລະ ບໍລິການເຊີເວີ (Server ງວດທີ 2 ປະຈຳປີ 2024)`,
-                                                        style: 'table',
-                                                    },
-
-                                                ],
-
-                                            ],
-                                        },
-                                        layout: 'noBorders'
-                                    },
-                                    {
-                                        // ຈຳນວນ
-                                        text: '1000',
-                                        style: 'table',
-                                        alignment: 'center'
-                                    },
-                                    {
-                                        // ລາຄາຫົວໜ່ວຍ
-                                        text: '1,000,000,000.00',
-                                        style: 'table',
-                                        alignment: 'right'
-                                    },
-                                    {
-                                        // ລວມເປັນເງິນ
-                                        text: '1,000,000,000.00',
-                                        style: 'table',
-                                        alignment: 'right'
-                                    },
-                                ],
+                                ])
 
                             ]
                         },
@@ -381,7 +297,7 @@ export default function Quotation() {
                                 [
 
                                     {
-                                        text: 'ມູນຄ່າລວມທັງໝົດ (currency):',
+                                        text: `${t('Total')} (KIP):`,
                                         style: 'table',
                                         alignment: 'right',
                                         bold: true,
@@ -389,7 +305,9 @@ export default function Quotation() {
                                     },
                                     {
                                         // ລວມເປັນເງິນ
-                                        text: '1,000,000,000.00',
+                                        text: numberDot((quotationDataId?.items ? quotationDataId?.items : []).reduce((total, currentValue) =>
+                                            total = total + Number(currentValue.quantity * currentValue.unit_price), 0
+                                        )),
                                         bold: true,
                                         style: 'table',
                                         alignment: 'right',
@@ -418,7 +336,7 @@ export default function Quotation() {
                     },
                     {
                         margin: [0, 20, 100, 0],
-                        text: 'ຜູ້ອຳນວຍການ', style: 'companybold',
+                        text: t('Director'), style: 'companybold',
                         alignment: 'right',
                     },
                 ],
@@ -455,20 +373,20 @@ export default function Quotation() {
                         bold: true,
                         alignment: 'center',
                         margin: [0, 0, 0, -5],
-                     
+
                     },
                     subheadercenter: {
                         fontSize: 11,
                         alignment: 'center',
                         bold: true,
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
 
                     },
                     subheaderleft: {
                         fontSize: 11,
                         alignment: 'left',
                         bold: true,
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
 
                     },
                     headerleft: {
@@ -476,22 +394,22 @@ export default function Quotation() {
                         bold: true,
                         alignment: 'left',
                         margin: [0, 0, 0, -5],
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
                     },
                     normalleft: {
                         fontSize: 11,
                         alignment: 'left',
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
                     },
                     normalright: {
                         fontSize: 11,
                         alignment: 'right',
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
                     },
                     table: {
                         fontSize: 11,
                         alignment: 'left',
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
 
                     },
                     tableHeader: {
@@ -503,34 +421,33 @@ export default function Quotation() {
                     tablenumber: {
                         fontSize: 11,
                         alignment: 'right',
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
 
                     },
                     tablenumberbold: {
                         fontSize: 11,
                         alignment: 'right',
                         bold: true,
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
 
                     },
                     tabledatail: {
                         fontSize: 11,
                         alignment: 'left',
-                        lineHeight: 1,
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
 
                     },
                     companybold: {
                         fontSize: 11,
                         bold: true,
                         alignment: 'left',
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
 
                     },
                     company: {
                         fontSize: 11,
                         alignment: 'left',
-                         lineHeight: 0.8,
+                        lineHeight: 0.8,
 
 
                     },
@@ -548,47 +465,76 @@ export default function Quotation() {
                     creator: 'tsd.la',
                 },
             };
-            // pdfMake.createPdf(documentDefinition).open();
             pdfMake.createPdf(documentDefinition).getBlob((dataUrl) => {
                 setUrl(URL.createObjectURL(dataUrl));
             });
-            // pdfMake.createPdf(documentDefinition).getDataUrl().then((dataUrl) => {
-            //     setUrl(URL.createObjectURL(dataUrl));
-            // }, err => {
-            //     console.error(err);
-            // });
         } catch (error) {
             return error
         }
-    }, []);
+    }, [
+        t,
+        companyDataId?.name,
+        companyDataId?.address,
+        companyDataId?.email,
+        companyDataId?.phone,
+        quotationDataId?.items,
+        customerDataId?.name,
+        customerDataId?.address,
+        customerDataId?.phone,
+        customerDataId?.email,
+        quotationDataId?.quotation?.quote_date,
+        quotationDataId?.quotation?.quote_number,
+    ]);
 
     return (
-        <div className="shadow-lg hover:shadow-xl">
-            {url ? (
-                <div className="mt-3l">
-                    <button
-                        type="button"
-                        onClick={() => window.open(url)}
-                        className="inline-flex items-center gap-x-2 rounded-md px-1.5 py-0.5 text-sm text-gray-600 border border-gray-200 shadow-lg hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                    >
-                        <ArrowTopRightOnSquareIcon aria-hidden="true" className="size-10" />
-                    </button>
-                    <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
-                        <iframe
-                            title="PDF Viewer"
-                            src={url}
-                            width="100%"
-                            height="100%"
-                            style={{
-                                minHeight: '500px', // Ensures readability
-                                maxWidth: '100%',
-                                // border: 'none', // Clean appearance
-                            }}
-                        />
-                    </div>
+        // <div className="shadow-lg hover:shadow-xl">
+        //     {url ? (
+        //         <div className="mt-3l">
+        //             <button
+        //                 type="button"
+        //                 onClick={() => window.open(url)}
+        //                 className="inline-flex items-center gap-x-2 rounded-md px-1.5 py-0.5 text-sm text-gray-600 border border-gray-200 shadow-lg hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        //             >
+        //                 <ArrowTopRightOnSquareIcon aria-hidden="true" className="size-10" />
+        //             </button>
+        //             <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
+        //                 <iframe
+        //                     title="PDF Viewer"
+        //                     src={url}
+        //                     width="100%"
+        //                     height="100%"
+        //                     style={{
+        //                         minHeight: '500px', // Ensures readability
+        //                         maxWidth: '100%',
+        //                         // border: 'none', // Clean appearance
+        //                     }}
+        //                 />
+        //             </div>
 
-                </div>
-            ) : null}
-        </div>
+        //         </div>
+        //     ) : null}
+        // </div>
+        <> 
+            {loading && <p className="text-sm text-gray-600">{t('Loading')}...</p>}
+            {error ? <p className="text-sm text-red-600">{t('Error')}: {JSON.stringify(error)}</p> :
+                quotationDataId?.items?.length > 0 ? url ? (
+                    <div className="mt-3l">
+                        <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
+                            <iframe
+                                title="PDF Viewer"
+                                src={url}
+                                width="100%"
+                                height="100%"
+                                style={{
+                                    minHeight: '500px', // Ensures readability
+                                    maxWidth: '100%',
+                                    // border: 'none', // Clean appearance
+                                }}
+                            />
+                        </div>
+
+                    </div>
+                ) : null : t('Data not found')}
+        </>
     );
 }

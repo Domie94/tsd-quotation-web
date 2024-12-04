@@ -41,7 +41,8 @@ export default function Add() {
             dispatch(createProduct({
                 name: values.name,
                 description: values.description,
-                unit_price: values.unit_price
+                unit_price: values.unit_price,
+                company_id: Number(localStorage.getItem('company_id'))
             }))
         }
     });
@@ -65,7 +66,7 @@ export default function Add() {
                                         </div>
                                         <div className="ml-3">
                                             <p className={classNames("text-md", success ? "text-green-700" : "text-red-700 leading-relaxed")}>
-                                                {error ? <>{t('Failed')} <br /> {error.message}</> : t('Successfully')}
+                                                {error ? <>{t('Failed')} <br /> {error.response.data.error}</> : t('Successfully')}
                                             </p>
                                         </div>
                                     </div>
@@ -124,7 +125,7 @@ export default function Add() {
                                     </div>
                                 </div>
                                 <div className="sm:col-span-12">
-                                    <label htmlFor="" className={classNames("block text-lg font-medium", validation.touched.unit_price && validation.errors.unit_price ? "text-red-400" : "text-gray-900")}>
+                                    <label htmlFor="price" className={classNames("block text-lg font-medium", validation.touched.unit_price && validation.errors.unit_price ? "text-red-400" : "text-gray-900")}>
                                         {t('Price')}:
                                     </label>
                                     <div>
